@@ -27,7 +27,7 @@ git clone https://github.com/msutyagin/parser_test_task
 ```
 Переходим в рабочий каталог:
 ```
-cd parser_src
+cd parser_test_task
 ```
 Устанавливаем зависимости
 ```

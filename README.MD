@@ -23,7 +23,7 @@
 
 Клонируем репозиторий
 ```
-git clone https://github.com/msutyagin/parser.git
+git clone https://github.com/msutyagin/parser_test_task
 ```
 Переходим в рабочий каталог:
 ```
@@ -33,7 +33,7 @@ cd parser_src
 ```
 poetry install
 ```
-Заходи в виртуальное окружение, если не зашли автоматически
+Заходим в виртуальное окружение
 ```
 poetry shell
 ```
@@ -43,7 +43,7 @@ pytest -s -v ./test*
 ```
 Запускаем приложение
 ```
-python main.py
+python3 main.py
 ```
 ## Использование c docker
 Собираем образ:

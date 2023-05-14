@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "src"
+version = "0.1.0"
+description = ""
+authors = ["Max <m.sutyagin.m@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+python-dotenv = "^1.0.0"
+pandas = "^2.0.1"
+loguru = "^0.7.0"
+sqlalchemy = "^2.0.13"
+pytest = "^7.3.1"
+openpyxl = "^3.1.2"
+
+
+[build-system]
+requires = ["poetry-core>=1.4.2"]
+build-backend = "poetry.core.masonry.api"

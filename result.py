@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import pandas as pd
-from config import RESULT_FILEPATH
 from logger import logger
 
 

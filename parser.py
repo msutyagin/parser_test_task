@@ -15,11 +15,11 @@ class IParser(ABC):
         self._file_path = FILEPATH
 
     @abstractmethod
-    def get_file_path(self):
+    def get_file_path(self) -> str:
         raise NotImplementedError("Пожалуйста реализуйте этот метод в дочернем классе")
 
     @abstractmethod
-    def parse_file(self):
+    def parse_file(self) -> pd.DataFrame:
         raise NotImplementedError("Пожалуйста реализуйте этот метод в дочернем классе")
 
 
@@ -30,7 +30,7 @@ class PandasParser(IParser):
     def __init__(self):
         super().__init__()
 
-    def get_file_path(self):
+    def get_file_path(self) -> str:
         """
         Инкапсуляция
         :return: Путь до файла для парсинга
@@ -40,7 +40,6 @@ class PandasParser(IParser):
     def parse_file(self) -> pd.DataFrame:
         """
         Парсит передаваемый файл
-        :param file_path:
         :return: Результирующий датафрейм
         """
         df = pd.read_excel(self.get_file_path(), header=None)
@@ -94,10 +93,18 @@ class PandasParserAnotherFile(IParser):
         super().__init__()
         self._file_path = './files/source2.xlsx'
 
-    def get_file_path(self):
+    def get_file_path(self) -> str:
+        """
+        Инкапсуляция
+        :return: Путь до файла для парсинга
+        """
         return self._file_path
 
-    def parse_file(self):
+    def parse_file(self) -> pd.DataFrame:
+        """
+        Парсит передаваемый файл
+        :return: Результирующий датафрейм
+        """
         df = pd.read_excel(self.get_file_path(), header=None)
         logger.info(f'df = \n {df}')
         return df

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import sqlalchemy
+import sqlite3
 import pandas as pd
 
 
@@ -7,8 +7,10 @@ class SqliteDatabaseConnector:
     """Интерфейс подключения к SQLite"""
 
     @staticmethod
-    def get_connection(db_file_path: str = None):
-        return sqlalchemy.create_engine(f'sqlite:///{db_file_path}', echo=False)
+    def get_connection(db_file_path: str = None) -> sqlite3.Connection:
+        connection = sqlite3.connect(f'{db_file_path}')
+        print(connection)
+        return connection
 
 
 class ISqliteDataSaver(ABC):
@@ -18,7 +20,7 @@ class ISqliteDataSaver(ABC):
      для реализации и переменные объектов в одном классе.
      """
 
-    def __init__(self, engine: sqlalchemy.engine.base.Engine):
+    def __init__(self, engine: sqlite3.Connection):
         self._engine = engine
 
     @abstractmethod
@@ -31,7 +33,7 @@ class SqliteDataSaver(ISqliteDataSaver):
     В классе реализован метод сохранения данных в таблицу Sqlite БД
     """
 
-    def save_data(self, parsed_df: pd.DataFrame, table_name: str):
+    def save_data(self, parsed_df: pd.DataFrame, table_name: str) -> None:
         """
         Метод реализует сохранение данных в таблицу, название которой передается в параметрах.
         Предварительно, если таблица с таким названием существует, она удаляется.
@@ -39,9 +41,10 @@ class SqliteDataSaver(ISqliteDataSaver):
         :param table_name: Имя таблицы
         """
         try:
-            with self._engine.connect() as conn:
-                conn.execute(sqlalchemy.text(f"DROP TABLE {table_name}"))
-        except sqlalchemy.exc.OperationalError:
+            with self._engine:
+                cursor = self._engine.cursor()
+                cursor.execute(f"DROP TABLE {table_name}")
+        except sqlite3.OperationalError:
             pass
         parsed_df.to_sql(table_name, con=self._engine)
 
@@ -51,7 +54,7 @@ class Saver:
     Демонстрация Dependency inversion и Barbara Liskov Substitution"""
 
     @staticmethod
-    def save(saver: ISqliteDataSaver, parsed_df: pd.DataFrame, table_name: str):
+    def save(saver: ISqliteDataSaver, parsed_df: pd.DataFrame, table_name: str) -> None:
         """
         Запускает абстрактный объект, сохраняющий данные в БД
         :param saver: Абстрактный объект сохраняющий данные в БД
@@ -68,7 +71,7 @@ class ISqliteDataGetter(ABC):
      для реализации и переменные объектов в одном классе.
      """
 
-    def __init__(self, engine: sqlalchemy.engine.base.Engine):
+    def __init__(self, engine: sqlite3.Connection):
         self._engine = engine
 
     @abstractmethod
@@ -87,8 +90,9 @@ class SqliteDataGetter(ISqliteDataGetter):
         :param table_name: Имя таблицы
         :return: Список строк таблицы
         """
-        with self._engine.connect() as conn:
-            result = conn.execute(sqlalchemy.text(f"SELECT * FROM {table_name}")).fetchall()
+        with self._engine:
+            cursor = self._engine.cursor()
+            result = cursor.execute(f"SELECT * FROM {table_name}").fetchall()
         return result
 
 
@@ -97,7 +101,7 @@ class DataGetter:
     Демонстрация Dependency inversion и Barbara Liskov Substitution"""
 
     @staticmethod
-    def get_data(getter: ISqliteDataGetter, table_name: str):
+    def get_data(getter: ISqliteDataGetter, table_name: str) -> list:
         """
         Метод запускает процесс получения данных из таблицы, имя которой передается в параметрах
         :param getter: Абстрактный объект получающий данные из БД
